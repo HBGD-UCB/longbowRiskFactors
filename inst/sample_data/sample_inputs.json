@@ -1,1 +1,47 @@
-{"roles":["strata","id","W","A","Y"],"data":{"type":["web"],"uri":["https://raw.githubusercontent.com/HBGD-UCB/longbowRiskFactors/master/inst/sample_data/birthwt_data.csv"]},"nodes":{"strata":["study_id"],"W":["apgar1","apgar5","gagebrth","mage","meducyrs","sexn"],"A":["parity_cat"],"Y":["haz01"]},"script_params":{"parallelize":[false],"library_type":["comprehensive"],"num_treatment_categories":[3],"baseline_category":[1]},"output_directory":[""]}
+{
+  "roles": [
+    "strata",
+    "id",
+    "W",
+    "A",
+    "Y"
+  ],
+  "data": {
+    "type": [
+      "web"
+    ],
+    "uri": [
+      "https://raw.githubusercontent.com/HBGD-UCB/longbowRiskFactors/master/inst/sample_data/birthwt_data.csv"
+    ]
+  },
+  "nodes": {
+    "strata": [
+      "study_id"
+    ],
+    "W": [
+      "apgar1",
+      "apgar5",
+      "gagebrth",
+      "mage",
+      "meducyrs",
+      "sexn"
+    ],
+    "A": [
+      "parity_cat"
+    ],
+    "Y": [
+      "haz01"
+    ]
+  },
+  "script_params": {
+    "parallelize": [
+      false
+    ],
+    "baseline_level": [
+      null
+    ]
+  },
+  "output_directory": [
+    ""
+  ]
+}

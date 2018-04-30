@@ -29,7 +29,7 @@ get_intervention_levels <- function(param_names){
 }
 
 #' @export
-format_results <- function(results,nodes){
+format_results <- function(results, data, nodes){
   # extract intervention levels
   intervention_levels <- get_intervention_levels(results$param)
   set(results, , names(intervention_levels), intervention_levels)
@@ -38,7 +38,6 @@ format_results <- function(results,nodes){
   node_data <- as.data.table(lapply(nodes[c("W","A","Y")],paste,collapse=", "))
   set(results, , names(node_data), node_data)
 
-  # get counts
   # pull out useful columns
   keep_cols <- c(nodes$strata, "W", "A", "Y",
                  "type", "param",
@@ -50,5 +49,10 @@ format_results <- function(results,nodes){
                 "estimate","ci_lower","ci_upper")
   formatted <- results[,keep_cols, with=FALSE]
   setnames(formatted, nice_names)
+  
+  # add collapsed strata label for plotting
+  strata_map <- collapse_strata(data, nodes)
+  formatted <- merge(strata_map,formatted, by=nodes$strata)
+  
   return(formatted)
 }

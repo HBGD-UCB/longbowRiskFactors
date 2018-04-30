@@ -6,8 +6,9 @@ library(devtools)
 rmd_filename <- package_file("inst","templates","longbow_RiskFactors.Rmd")
 
 # generate inputs file (can also use an existing one)
+# params <- params_from_rmd(rmd_filename, sample_json)
 sample_json <- package_file("inst","sample_data","sample_inputs.json")
-params <- params_from_rmd(rmd_filename, sample_json)
+params <- fromJSON(sample_json)
 
 # to run on your machine
 run_locally(rmd_filename, sample_json, open_result = TRUE)
@@ -17,8 +18,11 @@ run_locally(rmd_filename, sample_json, open_result = TRUE)
 configure_ghap("~/ghap.json")
 
 # provide inputs (these reference Andrew's dataset)
-inputs_json <- "~/Dropbox/gates/tlapp-demo/templates/birthweight_inputs.json"
-run_on_cluster(rmd_filename, inputs_json, open_result = TRUE)
+# inputs_json <- "~/Dropbox/gates/tlapp-demo/templates/birthweight_inputs.json"
+run_on_cluster(rmd_filename, sample_json, open_result = TRUE)
+
+ghap_test_json <- package_file("inst","sample_data","ghap_test.json")
+run_on_cluster(rmd_filename, ghap_test_json, open_result = TRUE)
 
 # publish your template for other users to use
 publish_template(rmd_filename, open_result = TRUE)

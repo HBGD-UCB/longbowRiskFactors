@@ -113,7 +113,7 @@ if(is.na(baseline_level)){
   baseline_level = NULL
 }
 results <- stratified_tmle(data, nodes, baseline_level, learner_list)
-formatted_results <- format_results(results, nodes)
+formatted_results <- format_results(results, data, nodes)
 ```
 
 # Outcome Variable

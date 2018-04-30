@@ -1,0 +1,26 @@
+Package: longbowRiskFactors
+Version: 0.0.0.9000
+Title: Longbow Template for Risk Factors
+Description: Longbow template (with helper functions) for simple analysis of risk factors using TMLE
+Authors@R: person("Jeremy", "Coyle", email = "jeremyrcoyle@gmail.com", role = c("aut", "cre"))
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+ByteCompile: true
+Imports:
+	 R6,
+	 data.table,
+	 ggplot2,
+	 stringr,
+    sl3,
+    tmle3,
+    tltools
+Remotes:
+    github::osofr/condensier,
+    github::tlverse/delayed,
+    github::tlverse/sl3
+    github::tlverse/tmle3@conditional-densities,
+    github::jeremyrcoyle/tltools,
+Suggests: 
+    testthat
+RoxygenNote: 6.0.1

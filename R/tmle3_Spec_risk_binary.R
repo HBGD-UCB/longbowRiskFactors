@@ -13,7 +13,7 @@ tmle3_Spec_risk_binary <- R6Class(
   inherit = tmle3_Spec,
   public = list(
     initialize = function(baseline_level = NULL, ...) {
-      super$initialize(list(baseline_level=baseline_level, ...))
+      super$initialize(baseline_level=baseline_level, ...)
     },
     make_params = function(tmle_task, likelihood) {
       # todo: export and use sl3:::get_levels
@@ -31,7 +31,7 @@ tmle3_Spec_risk_binary <- R6Class(
       })
 
       # separate baseline and comparisons
-      baseline_level <- self$params$baseline_level
+      baseline_level <- self$options$baseline_level
       if(is.null(baseline_level)){
         baseline_level = A_levels[[1]]
       }
@@ -71,5 +71,5 @@ tmle3_Spec_risk_binary <- R6Class(
 #' @export
 tmle_risk_binary <- function(baseline_level = NULL) {
   # todo: unclear why this has to be in a factory function
-  tmle3_Spec_risk_binary$new(baseline_level = NULL)
+  tmle3_Spec_risk_binary$new(baseline_level = baseline_level)
 }

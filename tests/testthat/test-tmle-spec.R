@@ -13,10 +13,8 @@ nodes <- list(
 )
 
 # drop missing values
-processed <- process_missing(sample_rf_data, nodes)
+processed <- process_missing(sample_rf_data, nodes, complete_nodes = c("strata","A","Y"))
 data <- processed$data
-# todo: don't drop out other nodes
-data$study_id <- sample_rf_data$study_id
 nodes <- processed$node_list
 
 #define learners
@@ -44,4 +42,6 @@ if(FALSE && length(nodes$W)>0){
 
 learner_list <- list(Y=Q_learner, A=g_learner)
 # tmle3_Fit$debug(".tmle_fit")
-tmle_fit_from_spec <- tmle3(tmle_risk_binary(), data, nodes, learner_list)
+tmle_spec<-tmle_risk_binary(baseline_level="[1,2)")
+# debugonce(tmle_spec$make_params)
+tmle_fit <- tmle3(tmle_spec, data, nodes, learner_list)

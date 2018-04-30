@@ -3,7 +3,6 @@
 #' @export
 collapse_strata <- function(data, nodes)
 {
-  nodes$strata <- c("study_id")
   strata <- data[,nodes$strata, with=FALSE]
   strata <- strata[!duplicated(strata)]
   set(strata, , "strata_id", 1:nrow(strata))

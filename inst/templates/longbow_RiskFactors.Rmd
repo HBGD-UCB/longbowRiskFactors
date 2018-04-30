@@ -42,7 +42,7 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, eval.after = 'fig.cap')
 options(scipen=999)
 ```
 
-```{r params, warning=FALSE}
+```{r params, warning=FALSE, message=FALSE}
 library(tltools)
 library(longbowRiskFactors)
 library(sl3)
@@ -52,6 +52,8 @@ nodes <- get_tl_nodes()
 library(future)
 tl_params <- get_tl_params()
 
+message(nodes)
+message(tl_params)
 if(tl_params$parallelize){
   
   workers=availableCores()/2
@@ -67,7 +69,6 @@ if(tl_params$parallelize){
 ```{r preprocessing}
 
 # drop missing values
-study_id <- data$study_id
 processed <- process_missing(data, nodes,complete_nodes = c("strata","A","Y"))
 data <- processed$data
 nodes <- processed$node_list
@@ -109,7 +110,7 @@ learner_list <- list(Y=Q_learner, A=g_learner)
 
 ```{r stratified_tmle, message=FALSE}
 baseline_level <- tl_params$baseline_level
-if(is.na(baseline_level)){
+if(is.null(baseline_level)||is.na(baseline_level)){
   baseline_level = NULL
 }
 results <- stratified_tmle(data, nodes, baseline_level, learner_list)
@@ -175,5 +176,9 @@ for(parameter_type in parameter_types){
 ```
 
 ```{r save_results}
-save(formatted_results, file="results.rdata")
+if(params$output_directory!=""){
+  results_file <- file.path(params$output_directory, "results.rdata")
+  
+  save(formatted_results, file=results_file)
+}
 ```

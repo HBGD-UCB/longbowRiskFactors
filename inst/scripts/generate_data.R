@@ -18,6 +18,6 @@ data$haz01 <- as.numeric(data$haz > 0)
 discretize_variable(data, "parity_cat", 4)
 data$parity_cat
 data$study_id <- sample(1:5, nrow(data), replace=TRUE)
-write.csv(data,package_file("inst","sample_data","birthwtdata.csv"),row.names=FALSE)
+write.csv(data,package_file("inst","sample_data","birthwt_data.csv"),row.names=FALSE)
 sample_rf_data <- data
 use_data(sample_rf_data, overwrite = TRUE)

@@ -4,12 +4,12 @@ output:
   html_document:
     standalone: true
     self_contained: true
-required_packages:  ['knitr', 'igraph@1.0.1', 'github://tlverse/sl3', 'github://tlverse/tmle3@56400a3', 'github://jeremyrcoyle/skimr@vector_types', 'Rsolnp', 'glmnet', 'xgboost', 'randomForest', 'future', 'ck37r',
-'github://tlverse/delayed']
+required_packages:  ['github://HBGD-UCB/longbowRiskFactors','github://jeremyrcoyle/skimr@vector_types', 'github://tlverse/delayed']
 params:
   roles:
     value:
-      - exclude
+      - strata
+      - id
       - W
       - A
       - Y

@@ -5,7 +5,7 @@
 .future
 README.html
 vignettes/*.html
-*.rdata
+/*.rdata
 # macOS files
 .DS_Store
 inst/doc

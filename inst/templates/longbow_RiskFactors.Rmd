@@ -175,5 +175,5 @@ for(parameter_type in parameter_types){
 ```
 
 ```{r save_results}
-save(formatted_results, file="results_processed.rdata")
+save(formatted_results, file="results.rdata")
 ```

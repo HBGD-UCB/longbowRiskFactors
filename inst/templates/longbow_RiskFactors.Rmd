@@ -85,7 +85,7 @@ char_to_factor <-function(data){
 char_to_factor(data)
 
 #define learners
-if(FALSE && length(nodes$W)>0){
+if(length(nodes$W)>0){
   qlib <- make_learner_stack("Lrnr_mean",
                              "Lrnr_glm_fast",
                              "Lrnr_glmnet",

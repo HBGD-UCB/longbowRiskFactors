@@ -1,6 +1,7 @@
 #load longbowtools
 library(longbowtools)
 library(devtools)
+library(jsonlite)
 
 # template file
 rmd_filename <- package_file("inst","templates","longbow_RiskFactors.Rmd")

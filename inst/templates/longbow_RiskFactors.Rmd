@@ -157,7 +157,7 @@ min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
                          by=eval(nodes$strata)]
 
 #todo: this could be a script parameter
-cell_cutoff <- 10
+cell_cutoff <- 5
 dropped_strata <- min_counts[min_cell < cell_cutoff]
 
 if(nrow(dropped_strata)>0){

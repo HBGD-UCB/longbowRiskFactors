@@ -122,8 +122,12 @@ learner_list <- list(Y=Q_learner, A=g_learner)
 **Adjustment Set:**
 
 ```{r print_adjustment_set, results = "asis"}
-for(covariate in nodes$W){
-  cat(sprintf("* %s\n",covariate))
+if(length(nodes$W)==0){
+  cat("unadjusted\n")
+} else {
+  for(covariate in nodes$W){
+    cat(sprintf("* %s\n",covariate))
+  }
 }
 ```
 

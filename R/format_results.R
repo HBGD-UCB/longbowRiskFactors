@@ -36,6 +36,10 @@ format_results <- function(results, data, nodes){
 
   # get nodes
   node_data <- as.data.table(lapply(nodes[c("W","A","Y")],paste,collapse=", "))
+  if(is.null(node_data$W)){
+    node_data$W="unadjusted"
+  }
+
   set(results, , names(node_data), node_data)
 
   # pull out useful columns
@@ -51,10 +55,10 @@ format_results <- function(results, data, nodes){
                 "untransformed_estimate","untransformed_se")
   formatted <- results[,keep_cols, with=FALSE]
   setnames(formatted, nice_names)
-  
+
   # add collapsed strata label for plotting
   strata_map <- collapse_strata(data, nodes)
   formatted <- merge(strata_map,formatted, by=nodes$strata)
-  
+
   return(formatted)
 }

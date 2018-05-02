@@ -3,14 +3,22 @@
 #' @export
 collapse_strata <- function(data, nodes)
 {
+  # get strata levels
   strata <- data[,nodes$strata, with=FALSE]
-  strata <- strata[!duplicated(strata)]
+  strata <- unique(strata)
   set(strata, , "strata_id", 1:nrow(strata))
+
+  # format strata labels
   long <- melt(strata, id.vars="strata_id", measure.vars=c())
   set(long, , "label", sprintf("%s: %s",long$variable, long$value))
   collapsed <- long[, list(strata_label=paste(label, collapse=", ")), by=list(strata_id)]
+
+  # build map
   strata_map <- merge(strata, collapsed, by="strata_id")
   strata_map$strata_id <- NULL
+  strata_map <- setkey(strata_map, "strata_label")
+  strata_labels <- strata_map[data, strata_label, on=eval(nodes$strata)]
+  set(data, , "strata_label", strata_labels)
   return(strata_map)
 }
 
@@ -22,18 +30,18 @@ tmle_for_stratum <- function(stratum_data, nodes, baseline_level, learner_list){
 
 #' @export
 #' @importFrom data.table rbindlist
-stratified_tmle <- function(data, nodes, baseline_level, learner_list){
+stratified_tmle <- function(data, nodes, baseline_level, learner_list, strata){
   #todo: make this fallback to standard tmle if no stratifying variables
-  strata <- collapse_strata(data, nodes)
-  n_strata <- nrow(strata)
-  all_results <- lapply(1:n_strata, function(row){
-    stratum <- strata[row]
-    message("tmle for:\t",stratum$strata_label)
+  strata_labels <- strata$strata_label
 
-
-    stratum_data <- merge(stratum,data,by=nodes$strata)
+  # stratum_label=strata_labels[[1]]
+  all_results <- lapply(strata_labels, function(stratum_label){
+    message("tmle for:\t",stratum_label)
+    stratum_data <- data[strata_label==stratum_label]
+    stratum_ids <- strata[strata_label==stratum_label]
     results <- tmle_for_stratum(stratum_data, nodes, baseline_level, learner_list)
-    results <- cbind(stratum,results)
+
+    results <- cbind(stratum_ids,results)
 
     return(results)
   })

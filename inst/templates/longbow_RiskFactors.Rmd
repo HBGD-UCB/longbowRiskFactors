@@ -2,7 +2,7 @@
 title: "Risk Factor Analysis"
 output: 
   html_document:
-    standalone: true
+    keep_md: TRUE
     self_contained: true
 required_packages:  ['github://HBGD-UCB/longbowRiskFactors','github://jeremyrcoyle/skimr@vector_types', 'github://tlverse/delayed']
 params:
@@ -43,10 +43,12 @@ options(scipen=999)
 ```
 
 ```{r params, warning=FALSE, message=FALSE}
-library(tltools)
+library(longbowtools)
 library(longbowRiskFactors)
 library(sl3)
 library(tmle3)
+library(data.table)
+library(stringr)
 data <- get_tl_data()
 nodes <- get_tl_nodes()
 library(future)
@@ -108,20 +110,12 @@ if(FALSE && length(nodes$W)>0){
 learner_list <- list(Y=Q_learner, A=g_learner)
 ```
 
-```{r stratified_tmle, message=FALSE}
-baseline_level <- tl_params$baseline_level
-if(is.null(baseline_level)||is.na(baseline_level)){
-  baseline_level = NULL
-}
-results <- stratified_tmle(data, nodes, baseline_level, learner_list)
-formatted_results <- format_results(results, data, nodes)
-```
-
-# Outcome Variable
+## Methods
+## Outcome Variable
 
 **Outcome Variable:** `r nodes$Y`
 
-# Predictor Variables
+## Predictor Variables
 
 **Intervention Variable:** `r nodes$A`
 
@@ -133,9 +127,67 @@ for(covariate in nodes$W){
 }
 ```
 
+## Stratifying Variables
+
+The analysis was stratified on these variable(s):
+
+```{r print_strata_variables, results = "asis"}
+for(strata_variable in nodes$strata){
+  cat(sprintf("* %s\n",strata_variable))
+}
+
+strata <- collapse_strata(data, nodes)
+
+```
+
+
+The following strata were considered:
+
+```{r print_strata, results = "asis"}
+strata_levels <- sort(unique(strata$strata_label))
+for(stratum in strata_levels){
+  cat(sprintf("* %s\n",stratum))
+}
+```
+
+```{r drop_strata, results = "asis"}
+obs_counts <- get_obs_counts(data, nodes)
+count_cols <- grep("n",names(obs_counts), value=TRUE)
+min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
+                         by=eval(nodes$strata)]
+
+#todo: this could be a script parameter
+cell_cutoff <- 10
+dropped_strata <- min_counts[min_cell < cell_cutoff]
+
+if(nrow(dropped_strata)>0){
+  cat("### Dropped Strata\n\nSome strata were dropped due to rare outcomes:\n\n")
+  # get strata labels for dropped_strata
+  dropped_labels <- strata[dropped_strata, strata_label, on=eval(nodes$strata)]
+  
+  for(stratum in dropped_labels){
+    cat(sprintf("* %s\n",stratum))
+  }
+  
+  #actually drop these strata
+  data <- data[!(strata_label%in%dropped_labels)]
+  strata <- strata[!(strata_label%in%dropped_labels)]
+}
+```
+
 ## Methods Detail
 
 **todo**
+
+
+```{r stratified_tmle, message=FALSE}
+baseline_level <- tl_params$baseline_level
+if(is.null(baseline_level)||is.na(baseline_level)){
+  baseline_level = NULL
+}
+results <- stratified_tmle(data, nodes, baseline_level, learner_list, strata)
+formatted_results <- format_results(results, data, nodes)
+```
 
 # Results Detail
 
@@ -158,7 +210,6 @@ par_plot(formatted_results)
 
 ## Data Summary
 ```{r data_summary}
-obs_counts <- get_obs_counts(data, nodes)
 kable(obs_counts)
 ```
 
@@ -167,9 +218,10 @@ kable(obs_counts)
 parameter_types <- unique(formatted_results$type)
 for(parameter_type in parameter_types){
   cat(sprintf("\n\n### Parameter: %s\n", parameter_type))
-  subset <- formatted_results[type==parameter_type]
-  subset$type = NULL
-  subset$parameter = NULL
+  print_cols <- c(nodes$strata, "intervention_level", "baseline_level", 
+                  "estimate", "ci_lower", "ci_upper")
+  subset <- formatted_results[type==parameter_type, print_cols, with=FALSE]
+  
   k <- kable(subset)
   print(k)
 }

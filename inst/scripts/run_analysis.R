@@ -1,5 +1,5 @@
-#install and load tltools
-library(tltools)
+#load longbowtools
+library(longbowtools)
 library(devtools)
 
 # template file
@@ -15,14 +15,14 @@ run_locally(rmd_filename, sample_json, open_result = TRUE)
 
 # to run on ghap rcluster
 # provide your ghap credentials
-configure_ghap("~/ghap.json")
+configure_cluster("~/cluster_credentials.json")
 
 # provide inputs (these reference Andrew's dataset)
 # inputs_json <- "~/Dropbox/gates/tlapp-demo/templates/birthweight_inputs.json"
-run_on_cluster(rmd_filename, sample_json, open_result = TRUE)
+run_on_longbow(rmd_filename, sample_json, open_result = TRUE)
 
 ghap_test_json <- package_file("inst","sample_data","ghap_test.json")
-run_on_cluster(rmd_filename, ghap_test_json, open_result = TRUE)
+job_url <- run_on_longbow(rmd_filename, ghap_test_json, open_result = TRUE)
 
 # publish your template for other users to use
 publish_template(rmd_filename, open_result = TRUE)

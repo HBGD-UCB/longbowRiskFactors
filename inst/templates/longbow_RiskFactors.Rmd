@@ -65,7 +65,9 @@ if(tl_params$parallelize){
   plan(sequential)
 }
 
-
+if(length(nodes$W)==0){
+  nodes$W=NULL
+}
 ```
 
 ```{r preprocessing}

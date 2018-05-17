@@ -18,7 +18,7 @@
     "strata": [
       "study_id"
     ],
-    "W": null,
+    "W": {},
     "A": [
       "parity_cat"
     ],

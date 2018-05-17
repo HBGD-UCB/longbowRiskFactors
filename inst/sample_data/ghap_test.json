@@ -14,10 +14,7 @@
     "strata": [
       "STUDYID"
     ],
-    "W": [
-      "AGEDAYS",
-      "SEX"
-    ],
+    "W": {},
     "A": [
       "HHwealth_quart"
     ],

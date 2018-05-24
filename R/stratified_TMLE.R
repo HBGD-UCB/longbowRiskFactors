@@ -9,7 +9,9 @@ collapse_strata <- function(data, nodes)
   set(strata, , "strata_id", 1:nrow(strata))
 
   # format strata labels
-  long <- melt(strata, id.vars="strata_id", measure.vars=c())
+  suppressWarnings({
+    long <- melt(strata, id.vars="strata_id", measure.vars=c())
+  })
   set(long, , "label", sprintf("%s: %s",long$variable, long$value))
   collapsed <- long[, list(strata_label=paste(label, collapse=", ")), by=list(strata_id)]
 

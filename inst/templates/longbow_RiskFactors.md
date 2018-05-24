@@ -8,6 +8,7 @@ required_packages:  ['github://HBGD-UCB/longbowRiskFactors','github://jeremyrcoy
 params:
   roles:
     value:
+      - exclude
       - strata
       - id
       - W
@@ -19,8 +20,9 @@ params:
       uri: 'https://raw.githubusercontent.com/HBGD-UCB/longbowRiskFactors/master/inst/sample_data/birthwt_data.csv'
   nodes:
     value:
-      strata: ['study_id']
-      W: ['apgar1', 'apgar5', 'gagebrth', 'mage', 'meducyrs', 'sexn']
+      strata: ['study_id', 'mrace']
+      id: ['subjid']
+      W: []
       A: ['parity_cat']
       Y: ['haz01']
   script_params:
@@ -53,40 +55,48 @@ params:
 
 **Adjustment Set:**
 
-* gagebrth
-* mage
-* sexn
-* apgar1
-* apgar5
-* meducyrs
-* delta_apgar1
-* delta_apgar5
-* delta_meducyrs
+unadjusted
 
 ## Stratifying Variables
 
 The analysis was stratified on these variable(s):
 
 * study_id
+* mrace
 
 
 The following strata were considered:
 
-* study_id: 1
-* study_id: 2
-* study_id: 3
-* study_id: 4
-* study_id: 5
+* study_id: 1, mrace: Black
+* study_id: 1, mrace: White
+* study_id: 2, mrace: Black
+* study_id: 2, mrace: White
+* study_id: 3, mrace: Black
+* study_id: 3, mrace: White
+* study_id: 4, mrace: Black
+* study_id: 4, mrace: White
+* study_id: 5, mrace: Black
+* study_id: 5, mrace: White
 
 ### Dropped Strata
 
 Some strata were dropped due to rare outcomes:
 
-* study_id: 1
+* study_id: 1, mrace: Black
+* study_id: 2, mrace: Black
+* study_id: 3, mrace: Black
+* study_id: 4, mrace: Black
+* study_id: 5, mrace: Black
 
 ## Methods Detail
 
-**todo**
+We're interested in the causal parameters $E[Y_a]$ for all values of $a \in \mathcal{A}$. These parameters represent the mean outcome if, possibly contrary to fact, we intervened to set all units to have $A=a$. Under the randomization and positivity assumptions, these are identified by the statistical parameters $\psi_a=E_W[E_{Y|A,W}(Y|A=a,W)]$.  In addition, we're interested in the mean of $Y$, $E[Y]$ under no intervention (the observed mean). We will estimate these parameters by using SuperLearner to fit the relevant likelihood factors -- $E_{Y|A,W}(Y|A=a,W)$ and $p(A=a|W)$, and then updating our likelihood fit using a joint TMLE.
+
+For unadjusted analyses ($W=\{\}$), initial likelihoods were estimated using Lrnr_glm to estimate the simple $E(Y|A)$ and Lrnr_mean to estimate $p(A)$. For adjusted analyses, a small library containing Lrnr_glmnet, Lrnr_xgboost, and Lrnr_mean was used.
+
+Having estimated these parameters, we will then use the delta method to estimate relative risks and attributable risks relative to a prespecified baseline level of $A$.
+
+todo: add detail about dropping strata with rare outcomes, handling missingness
 
 
 
@@ -104,103 +114,133 @@ Some strata were dropped due to rare outcomes:
 
 ## Data Summary
 
- study_id  A           n    nA   nAY0   nAY1
----------  -------  ----  ----  -----  -----
-        1  [0,1)     289    54      9     45
-        1  [1,2)     289    66     26     40
-        1  [2,3)     289    62     29     33
-        1  [3,13]    289   107     39     68
-        2  [0,1)     276    45     14     31
-        2  [1,2)     276    70     31     39
-        2  [2,3)     276    49     29     20
-        2  [3,13]    276   112     63     49
-        3  [0,1)     296    53     17     36
-        3  [1,2)     296    77     34     43
-        3  [2,3)     296    50     24     26
-        3  [3,13]    296   116     56     60
-        4  [0,1)     294    48     17     31
-        4  [1,2)     294    77     40     37
-        4  [2,3)     294    66     28     38
-        4  [3,13]    294   103     57     46
-        5  [0,1)     273    48     21     27
-        5  [1,2)     273    62     27     35
-        5  [2,3)     273    54     22     32
-        5  [3,13]    273   109     52     57
+ study_id  mrace   A           n    nA   nAY0   nAY1
+---------  ------  -------  ----  ----  -----  -----
+        1  Black   [0,1)      26     4      2      2
+        1  Black   [1,2)      26     8      4      4
+        1  Black   [2,3)      26     6      5      1
+        1  Black   [3,13]     26     8      2      6
+        1  White   [0,1)     263    50      7     43
+        1  White   [1,2)     263    58     22     36
+        1  White   [2,3)     263    56     24     32
+        1  White   [3,13]    263    99     37     62
+        2  Black   [0,1)      22     3      0      3
+        2  Black   [1,2)      22     3      1      2
+        2  Black   [2,3)      22     4      3      1
+        2  Black   [3,13]     22    12      1     11
+        2  White   [0,1)     254    42     14     28
+        2  White   [1,2)     254    67     30     37
+        2  White   [2,3)     254    45     26     19
+        2  White   [3,13]    254   100     62     38
+        3  Black   [0,1)      27     2      1      1
+        3  Black   [1,2)      27    10      6      4
+        3  Black   [2,3)      27     2      1      1
+        3  Black   [3,13]     27    13      5      8
+        3  White   [0,1)     269    51     16     35
+        3  White   [1,2)     269    67     28     39
+        3  White   [2,3)     269    48     23     25
+        3  White   [3,13]    269   103     51     52
+        4  Black   [0,1)      19     1      0      1
+        4  Black   [1,2)      19     7      3      4
+        4  Black   [2,3)      19     4      4      0
+        4  Black   [3,13]     19     7      2      5
+        4  White   [0,1)     275    47     17     30
+        4  White   [1,2)     275    70     37     33
+        4  White   [2,3)     275    62     24     38
+        4  White   [3,13]    275    96     55     41
+        5  Black   [0,1)      21     2      0      2
+        5  Black   [1,2)      21     3      0      3
+        5  Black   [2,3)      21     8      3      5
+        5  Black   [3,13]     21     8      1      7
+        5  White   [0,1)     252    46     21     25
+        5  White   [1,2)     252    59     27     32
+        5  White   [2,3)     252    46     19     27
+        5  White   [3,13]    252   101     51     50
 
 ## Results Table
 
 ### Parameter: TSM
 
 
- study_id  intervention_level   baseline_level     estimate    ci_lower    ci_upper
----------  -------------------  ---------------  ----------  ----------  ----------
-        2  [0,1)                NA                0.6874909   0.5495184   0.8254635
-        2  [1,2)                NA                0.5778056   0.4631834   0.6924277
-        2  [2,3)                NA                0.4485297   0.3102410   0.5868185
-        2  [3,13]               NA                0.4100636   0.3214471   0.4986802
-        3  [0,1)                NA                0.6735057   0.5483488   0.7986627
-        3  [1,2)                NA                0.5539737   0.4432528   0.6646946
-        3  [2,3)                NA                0.5219428   0.3871419   0.6567437
-        3  [3,13]               NA                0.5224364   0.4311015   0.6137714
-        4  [0,1)                NA                0.6290488   0.4955895   0.7625082
-        4  [1,2)                NA                0.5182550   0.4086035   0.6279065
-        4  [2,3)                NA                0.5367560   0.4214652   0.6520467
-        4  [3,13]               NA                0.4505214   0.3574965   0.5435463
-        5  [0,1)                NA                0.6404349   0.5084910   0.7723788
-        5  [1,2)                NA                0.6242985   0.5060390   0.7425580
-        5  [2,3)                NA                0.5543629   0.4270206   0.6817052
-        5  [3,13]               NA                0.4703604   0.3757618   0.5649589
+ study_id  mrace   intervention_level   baseline_level     estimate    ci_lower    ci_upper
+---------  ------  -------------------  ---------------  ----------  ----------  ----------
+        1  White   [0,1)                NA                0.8600000   0.7636385   0.9563615
+        1  White   [1,2)                NA                0.6206897   0.4955785   0.7458008
+        1  White   [2,3)                NA                0.5714286   0.4415690   0.7012881
+        1  White   [3,13]               NA                0.6262626   0.5307811   0.7217441
+        2  White   [0,1)                NA                0.6666667   0.5238188   0.8095145
+        2  White   [1,2)                NA                0.5522388   0.4329351   0.6715425
+        2  White   [2,3)                NA                0.4222222   0.2776285   0.5668159
+        2  White   [3,13]               NA                0.3800000   0.2846782   0.4753218
+        3  White   [0,1)                NA                0.6862745   0.5586907   0.8138583
+        3  White   [1,2)                NA                0.5820896   0.4637702   0.7004089
+        3  White   [2,3)                NA                0.5208333   0.3792445   0.6624221
+        3  White   [3,13]               NA                0.5048544   0.4081185   0.6015903
+        4  White   [0,1)                NA                0.6382979   0.5006792   0.7759166
+        4  White   [1,2)                NA                0.4714286   0.3542765   0.5885806
+        4  White   [2,3)                NA                0.6129032   0.4914388   0.7343676
+        4  White   [3,13]               NA                0.4270833   0.3279532   0.5262134
+        5  White   [0,1)                NA                0.5434783   0.3992487   0.6877079
+        5  White   [1,2)                NA                0.5423729   0.4149961   0.6697497
+        5  White   [2,3)                NA                0.5869565   0.4443848   0.7295283
+        5  White   [3,13]               NA                0.4950495   0.3973484   0.5927506
 
 
 ### Parameter: E(Y)
 
 
- study_id  intervention_level   baseline_level     estimate    ci_lower    ci_upper
----------  -------------------  ---------------  ----------  ----------  ----------
-        2  NA                   NA                0.5036232   0.4857765   0.5214699
-        3  NA                   NA                0.5574324   0.5480636   0.5668013
-        4  NA                   NA                0.5170068   0.4992551   0.5347585
-        5  NA                   NA                0.5531136   0.5378457   0.5683815
+ study_id  mrace   intervention_level   baseline_level     estimate    ci_lower    ci_upper
+---------  ------  -------------------  ---------------  ----------  ----------  ----------
+        1  White   NA                   NA                0.6577947   0.6456622   0.6699272
+        2  White   NA                   NA                0.4803150   0.4670056   0.4936244
+        3  White   NA                   NA                0.5613383   0.5532350   0.5694415
+        4  White   NA                   NA                0.5163636   0.5058137   0.5269136
+        5  White   NA                   NA                0.5317460   0.5275549   0.5359371
 
 
 ### Parameter: RR
 
 
- study_id  intervention_level   baseline_level    estimate   ci_lower   ci_upper
----------  -------------------  ---------------  ---------  ---------  ---------
-        2  [0,1)                [1,2)             3.286526   2.477741   4.359313
-        2  [2,3)                [1,2)             2.173338   1.508032   3.132159
-        2  [3,13]               [1,2)             2.033364   1.523047   2.714668
-        3  [0,1)                [1,2)             3.372897   2.568278   4.429597
-        3  [2,3)                [1,2)             2.565568   1.853122   3.551919
-        3  [3,13]               [1,2)             2.567855   1.969192   3.348520
-        4  [0,1)                [1,2)             3.366193   2.498951   4.534404
-        4  [2,3)                [1,2)             2.817073   2.089813   3.797422
-        4  [3,13]               [1,2)             2.385251   1.780277   3.195808
-        5  [0,1)                [1,2)             2.789458   2.117269   3.675052
-        5  [2,3)                [1,2)             2.430209   1.810729   3.261623
-        5  [3,13]               [1,2)             2.124257   1.616617   2.791303
+ study_id  mrace   intervention_level   baseline_level    estimate   ci_lower   ci_upper
+---------  ------  -------------------  ---------------  ---------  ---------  ---------
+        1  White   [0,1)                [1,2)             3.997046   3.173827   5.033790
+        1  White   [2,3)                [1,2)             2.510884   1.853116   3.402129
+        1  White   [3,13]               [1,2)             2.742798   2.130262   3.531464
+        2  White   [0,1)                [1,2)             3.344132   2.466822   4.533452
+        2  White   [2,3)                [1,2)             2.148059   1.432838   3.220291
+        2  White   [3,13]               [1,2)             1.989947   1.429115   2.770869
+        3  White   [0,1)                [1,2)             3.251071   2.468283   4.282110
+        3  White   [2,3)                [1,2)             2.446761   1.742506   3.435649
+        3  White   [3,13]               [1,2)             2.380508   1.800332   3.147651
+        4  White   [0,1)                [1,2)             3.872751   2.787007   5.381472
+        4  White   [2,3)                [1,2)             3.669655   2.670449   5.042736
+        4  White   [3,13]               [1,2)             2.474243   1.761017   3.476331
+        5  White   [0,1)                [1,2)             2.723828   1.911066   3.882249
+        5  White   [2,3)                [1,2)             2.951168   2.105035   4.137410
+        5  White   [3,13]               [1,2)             2.491158   1.833053   3.385535
 
 
 ### Parameter: PAR
 
 
- study_id  intervention_level   baseline_level      estimate     ci_lower    ci_upper
----------  -------------------  ---------------  -----------  -----------  ----------
-        2  [1,2)                NA                -0.0741824   -0.1887109   0.0403462
-        3  [1,2)                NA                 0.0034588   -0.1072879   0.1142054
-        4  [1,2)                NA                -0.0012482   -0.1105317   0.1080353
-        5  [1,2)                NA                -0.0711849   -0.1879610   0.0455911
+ study_id  mrace   intervention_level   baseline_level      estimate     ci_lower    ci_upper
+---------  ------  -------------------  ---------------  -----------  -----------  ----------
+        1  White   [1,2)                NA                 0.0371050   -0.0885930   0.1628030
+        2  White   [1,2)                NA                -0.0719238   -0.1919677   0.0481200
+        3  White   [1,2)                NA                -0.0207513   -0.1393478   0.0978453
+        4  White   [1,2)                NA                 0.0449351   -0.0726911   0.1625612
+        5  White   [1,2)                NA                -0.0106269   -0.1380726   0.1168189
 
 
 ### Parameter: PAF
 
 
- study_id  intervention_level   baseline_level     estimate    ci_lower    ci_upper
----------  -------------------  ---------------  ----------  ----------  ----------
-        2  [1,2)                NA                0.5817239   0.4898335   0.6570632
-        3  [1,2)                NA                0.6344103   0.5535086   0.7006530
-        4  [1,2)                NA                0.6312335   0.5446634   0.7013445
-        5  [1,2)                NA                0.5876885   0.5029179   0.6580026
+ study_id  mrace   intervention_level   baseline_level     estimate    ci_lower    ci_upper
+---------  ------  -------------------  ---------------  ----------  ----------  ----------
+        1  White   [1,2)                NA                0.6534681   0.5757237   0.7169666
+        2  White   [1,2)                NA                0.5809477   0.4789729   0.6629641
+        3  White   [1,2)                NA                0.6187692   0.5326009   0.6890518
+        4  White   [1,2)                NA                0.6655664   0.5708608   0.7393716
+        5  White   [1,2)                NA                0.6248415   0.5254667   0.7034057
 
 

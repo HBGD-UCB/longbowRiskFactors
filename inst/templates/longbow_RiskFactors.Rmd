@@ -17,7 +17,7 @@ params:
   data: 
     value: 
       type: 'web'
-      uri: 'https://raw.githubusercontent.com/HBGD-UCB/longbowRiskFactors/master/inst/sample_data/birthwt_data.csv'
+      uri: 'https://raw.githubusercontent.com/HBGD-UCB/longbowRiskFactors/master/inst/sample_data/birthwt_data.rdata'
   nodes:
     value:
       strata: ['study_id', 'mrace']

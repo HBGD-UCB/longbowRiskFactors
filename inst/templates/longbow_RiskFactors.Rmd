@@ -172,6 +172,7 @@ if(nrow(dropped_strata)>0){
   cat("### Dropped Strata\n\nSome strata were dropped due to rare outcomes:\n\n")
   # get strata labels for dropped_strata
   dropped_labels <- strata[dropped_strata, strata_label, on=eval(nodes$strata)]
+  dropped_labels <- dropped_labels[!is.na(dropped_labels)]
   
   for(stratum in dropped_labels){
     cat(sprintf("* %s\n",stratum))

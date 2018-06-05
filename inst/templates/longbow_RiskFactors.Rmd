@@ -74,10 +74,14 @@ if(length(nodes$W)==0){
 
 ```{r preprocessing}
 
+# drop strata variables not present in data
+nodes$strata <- intersect(nodes$strata, names(data))
+
 # drop missing values
 processed <- process_missing(data, nodes,complete_nodes = c("id","strata","A","Y"))
 data <- processed$data
 nodes <- processed$node_list
+
 
 # convert character columns to factors
 char_to_factor <-function(data){

@@ -164,7 +164,7 @@ for(stratum in strata_levels){
 
 ```{r drop_strata, results = "asis"}
 obs_counts <- get_obs_counts(data, nodes)
-count_cols <- grep("n",names(obs_counts), value=TRUE)
+count_cols <- setdiff(names(obs_counts), c(names(data),"A"))
 min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
                          by=eval(nodes$strata)]
 
@@ -185,6 +185,11 @@ if(nrow(dropped_strata)>0){
   #actually drop these strata
   data <- data[!(strata_label%in%dropped_labels)]
   strata <- strata[!(strata_label%in%dropped_labels)]
+}
+
+if(ncol(data)==0){
+  cat("\n\nALL STRATA DROPPED. JOB FINISHED\n")
+  knit_exit()
 }
 ```
 

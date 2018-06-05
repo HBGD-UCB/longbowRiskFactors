@@ -64,54 +64,6 @@ The analysis was stratified on these variable(s):
 * study_id
 * mrace
 
-
-The following strata were considered:
-
-* study_id: 1, mrace: Black
-* study_id: 1, mrace: White
-* study_id: 2, mrace: Black
-* study_id: 2, mrace: White
-* study_id: 3, mrace: Black
-* study_id: 3, mrace: White
-* study_id: 4, mrace: Black
-* study_id: 4, mrace: White
-* study_id: 5, mrace: Black
-* study_id: 5, mrace: White
-
-### Dropped Strata
-
-Some strata were dropped due to rare outcomes:
-
-* study_id: 1, mrace: Black
-* study_id: 2, mrace: Black
-* study_id: 3, mrace: Black
-* study_id: 4, mrace: Black
-* study_id: 5, mrace: Black
-
-## Methods Detail
-
-We're interested in the causal parameters $E[Y_a]$ for all values of $a \in \mathcal{A}$. These parameters represent the mean outcome if, possibly contrary to fact, we intervened to set all units to have $A=a$. Under the randomization and positivity assumptions, these are identified by the statistical parameters $\psi_a=E_W[E_{Y|A,W}(Y|A=a,W)]$.  In addition, we're interested in the mean of $Y$, $E[Y]$ under no intervention (the observed mean). We will estimate these parameters by using SuperLearner to fit the relevant likelihood factors -- $E_{Y|A,W}(Y|A=a,W)$ and $p(A=a|W)$, and then updating our likelihood fit using a joint TMLE.
-
-For unadjusted analyses ($W=\{\}$), initial likelihoods were estimated using Lrnr_glm to estimate the simple $E(Y|A)$ and Lrnr_mean to estimate $p(A)$. For adjusted analyses, a small library containing Lrnr_glmnet, Lrnr_xgboost, and Lrnr_mean was used.
-
-Having estimated these parameters, we will then use the delta method to estimate relative risks and attributable risks relative to a prespecified baseline level of $A$.
-
-todo: add detail about dropping strata with rare outcomes, handling missingness
-
-
-
-
-# Results Detail
-
-## Results Plots
-![](longbow_RiskFactors_files/figure-html/plot_tsm-1.png)<!-- -->
-
-![](longbow_RiskFactors_files/figure-html/plot_rr-1.png)<!-- -->
-
-![](longbow_RiskFactors_files/figure-html/plot_paf-1.png)<!-- -->
-
-![](longbow_RiskFactors_files/figure-html/plot_par-1.png)<!-- -->
-
 ## Data Summary
 
  study_id  mrace   A           n    nA   nAY0   nAY1
@@ -156,6 +108,57 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
         5  White   [1,2)     252    59     27     32
         5  White   [2,3)     252    46     19     27
         5  White   [3,13]    252   101     51     50
+
+
+The following strata were considered:
+
+* study_id: 1, mrace: Black
+* study_id: 1, mrace: White
+* study_id: 2, mrace: Black
+* study_id: 2, mrace: White
+* study_id: 3, mrace: Black
+* study_id: 3, mrace: White
+* study_id: 4, mrace: Black
+* study_id: 4, mrace: White
+* study_id: 5, mrace: Black
+* study_id: 5, mrace: White
+
+### Dropped Strata
+
+Some strata were dropped due to rare outcomes:
+
+* study_id: 1, mrace: Black
+* study_id: 2, mrace: Black
+* study_id: 3, mrace: Black
+* study_id: 4, mrace: Black
+* study_id: 5, mrace: Black
+
+## Methods Detail
+
+We're interested in the causal parameters $E[Y_a]$ for all values of $a \in \mathcal{A}$. These parameters represent the mean outcome if, possibly contrary to fact, we intervened to set all units to have $A=a$. Under the randomization and positivity assumptions, these are identified by the statistical parameters $\psi_a=E_W[E_{Y|A,W}(Y|A=a,W)]$.  In addition, we're interested in the mean of $Y$, $E[Y]$ under no intervention (the observed mean). We will estimate these parameters by using SuperLearner to fit the relevant likelihood factors -- $E_{Y|A,W}(Y|A=a,W)$ and $p(A=a|W)$, and then updating our likelihood fit using a joint TMLE.
+
+For unadjusted analyses ($W=\{\}$), initial likelihoods were estimated using Lrnr_glm to estimate the simple $E(Y|A)$ and Lrnr_mean to estimate $p(A)$. For adjusted analyses, a small library containing Lrnr_glmnet, Lrnr_xgboost, and Lrnr_mean was used.
+
+Having estimated these parameters, we will then use the delta method to estimate relative risks and attributable risks relative to a prespecified baseline level of $A$.
+
+todo: add detail about dropping strata with rare outcomes, handling missingness
+
+
+
+
+
+
+
+# Results Detail
+
+## Results Plots
+![](longbow_RiskFactors_files/figure-html/plot_tsm-1.png)<!-- -->
+
+![](longbow_RiskFactors_files/figure-html/plot_rr-1.png)<!-- -->
+
+![](longbow_RiskFactors_files/figure-html/plot_paf-1.png)<!-- -->
+
+![](longbow_RiskFactors_files/figure-html/plot_par-1.png)<!-- -->
 
 ## Results Table
 
@@ -242,5 +245,4 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
         3  White   [1,2)                NA                -0.0369675   -0.2906175   0.1668317
         4  White   [1,2)                NA                 0.0870221   -0.1949038   0.3024304
         5  White   [1,2)                NA                -0.0199848   -0.3054406   0.2030514
-
 

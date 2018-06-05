@@ -152,6 +152,19 @@ strata <- collapse_strata(data, nodes)
 
 ```
 
+## Data Summary
+```{r data_summary}
+obs_counts <- get_obs_counts(data, nodes)
+kable(obs_counts)
+
+if(params$output_directory!=""){
+  counts_file <- file.path(params$output_directory, "obs_counts.rdata")
+  
+  save(obs_counts, file=counts_file)
+}
+
+```
+
 
 The following strata were considered:
 
@@ -163,7 +176,6 @@ for(stratum in strata_levels){
 ```
 
 ```{r drop_strata, results = "asis"}
-obs_counts <- get_obs_counts(data, nodes)
 count_cols <- setdiff(names(obs_counts), c(names(data),"A"))
 min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
                          by=eval(nodes$strata)]
@@ -187,7 +199,7 @@ if(nrow(dropped_strata)>0){
   strata <- strata[!(strata_label%in%dropped_labels)]
 }
 
-if(ncol(data)==0){
+if(nrow(data)==0){
   cat("\n\nALL STRATA DROPPED. JOB FINISHED\n")
   knit_exit()
 }
@@ -213,6 +225,15 @@ results <- stratified_tmle(data, nodes, baseline_level, learner_list, strata)
 formatted_results <- format_results(results, data, nodes)
 ```
 
+```{r save_results}
+if(params$output_directory!=""){
+  results_file <- file.path(params$output_directory, "results.rdata")
+  
+  save(formatted_results, file=results_file)
+}
+```
+
+
 # Results Detail
 
 ## Results Plots
@@ -232,11 +253,6 @@ paf_plot(formatted_results)
 par_plot(formatted_results)
 ```
 
-## Data Summary
-```{r data_summary}
-kable(obs_counts)
-```
-
 ## Results Table
 ```{r results_tables, results="asis"}
 parameter_types <- unique(formatted_results$type)
@@ -251,14 +267,3 @@ for(parameter_type in parameter_types){
 }
 ```
 
-```{r save_results}
-if(params$output_directory!=""){
-  results_file <- file.path(params$output_directory, "results.rdata")
-  
-  save(formatted_results, file=results_file)
-  
-  counts_file <- file.path(params$output_directory, "obs_counts.rdata")
-  
-  save(obs_counts, file=counts_file)
-}
-```

@@ -4,13 +4,13 @@ get_obs_counts <- function(data, nodes){
   setnames(to_count, c(nodes$strata, "A", "Y"))
   set(to_count, ,"Y", paste("nAY",to_count$Y,sep=""))
   count_cats <- do.call(CJ, lapply(to_count, unique))
-  
+
   counts <- setkey(to_count)[count_cats, list(nAY=.N), by=.EACHI]
   counts[,nA:=sum(nAY), by=eval(c(nodes$strata, "A"))]
   counts[,n:=sum(nAY), by=eval(c(nodes$strata))]
   cast_form <- sprintf("%s~%s",paste(c(nodes$strata,"A","n", "nA"), collapse="+"),"Y")
   counts_wide <- dcast(counts, cast_form, value.var="nAY", fill=0)
-  
+  counts_wide <- counts_wide[n!=0]
   return(counts_wide)
 }
 

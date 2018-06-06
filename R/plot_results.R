@@ -18,6 +18,10 @@ rr_plot <- function(formatted_results){
   intervention <- rrs$intervention_variable[1]
   outcome <- rrs$outcome_variable[1]
   baseline <- rrs$baseline_level[1]
+  rrs[baseline_level==intervention_level, ci_lower:=NA]
+  rrs[baseline_level==intervention_level, ci_upper:=NA]
+  rrs[baseline_level==intervention_level, intervention_level:=sprintf("%s (ref)",intervention_level)]
+
   #todo: generalize faceting
   ggplot(rrs,aes_string(x="intervention_level", y="estimate", ymin="ci_lower", ymax="ci_upper"))+
     geom_point()+geom_errorbar()+facet_wrap(~strata_label)+

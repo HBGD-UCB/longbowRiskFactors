@@ -40,7 +40,7 @@ tmle3_Spec_risk_binary <- R6Class(
       comparison_params <- tsm_params[-1*baseline_index]
 
       # define RR params
-      rr_params <- lapply(comparison_params, function(comparison_param){
+      rr_params <- lapply(tsm_params, function(comparison_param){
         Param_delta$new(likelihood, delta_param_RR, list(baseline_param, comparison_param))
       })
 

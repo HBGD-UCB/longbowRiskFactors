@@ -154,6 +154,11 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
 ## Results Plots
 ![](longbow_RiskFactors_files/figure-html/plot_tsm-1.png)<!-- -->
 
+
+```
+## Warning: Removed 5 rows containing missing values (geom_errorbar).
+```
+
 ![](longbow_RiskFactors_files/figure-html/plot_rr-1.png)<!-- -->
 
 ![](longbow_RiskFactors_files/figure-html/plot_paf-1.png)<!-- -->
@@ -207,18 +212,23 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
  study_id  mrace   intervention_level   baseline_level     estimate    ci_lower    ci_upper
 ---------  ------  -------------------  ---------------  ----------  ----------  ----------
         1  White   [0,1)                [1,2)             1.3855556   1.0878519   1.7647294
+        1  White   [1,2)                [1,2)             1.0000000   1.0000000   1.0000000
         1  White   [2,3)                [1,2)             0.9206349   0.6648297   1.2748658
         1  White   [3,13]               [1,2)             1.0089787   0.7752766   1.3131288
         2  White   [0,1)                [1,2)             1.2072072   0.8563366   1.7018417
+        2  White   [1,2)                [1,2)             1.0000000   1.0000000   1.0000000
         2  White   [2,3)                [1,2)             0.7645646   0.5147736   1.1355653
         2  White   [3,13]               [1,2)             0.6881081   0.4859423   0.9743807
         3  White   [0,1)                [1,2)             1.1789844   0.8700702   1.5975772
+        3  White   [1,2)                [1,2)             1.0000000   1.0000000   1.0000000
         3  White   [2,3)                [1,2)             0.8947650   0.6266209   1.2776535
         3  White   [3,13]               [1,2)             0.8673139   0.6456871   1.1650124
         4  White   [0,1)                [1,2)             1.3539652   0.9327819   1.9653273
+        4  White   [1,2)                [1,2)             1.0000000   1.0000000   1.0000000
         4  White   [2,3)                [1,2)             1.3000978   0.9296597   1.8181428
         4  White   [3,13]               [1,2)             0.9059343   0.6294338   1.3038972
         5  White   [0,1)                [1,2)             1.0020380   0.6827414   1.4706596
+        5  White   [1,2)                [1,2)             1.0000000   1.0000000   1.0000000
         5  White   [2,3)                [1,2)             1.0822011   0.7569283   1.5472525
         5  White   [3,13]               [1,2)             0.9127475   0.6611983   1.2599973
 

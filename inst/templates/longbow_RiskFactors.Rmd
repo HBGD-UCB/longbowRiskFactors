@@ -30,6 +30,12 @@ params:
       parallelize:
         input: checkbox
         value: FALSE
+      count_A:
+        input: checkbox
+        value: TRUE
+      count_Y:
+        input: checkbox
+        value: TRUE        
       baseline_level:
         input: 'character'
         value: "[1,2)"
@@ -154,7 +160,7 @@ strata <- collapse_strata(data, nodes)
 
 ## Data Summary
 ```{r data_summary}
-obs_counts <- get_obs_counts(data, nodes)
+obs_counts <- get_obs_counts(data, nodes, tl_params)
 kable(obs_counts)
 
 if(params$output_directory!=""){
@@ -176,7 +182,7 @@ for(stratum in strata_levels){
 ```
 
 ```{r drop_strata, results = "asis"}
-count_cols <- setdiff(names(obs_counts), c(names(data),"A"))
+count_cols <- setdiff(names(obs_counts), unlist(nodes))
 min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
                          by=eval(nodes$strata)]
 

@@ -1,17 +1,30 @@
-#' @export
-get_obs_counts <- function(data, nodes){
-  to_count <- data[,c(nodes$strata,nodes$A,nodes$Y), with=FALSE]
-  setnames(to_count, c(nodes$strata, "A", "Y"))
-  set(to_count, ,"Y", paste("nAY",to_count$Y,sep=""))
-  count_cats <- do.call(CJ, lapply(to_count, unique))
+get_cell_counts <- function(one_stratum, cell_nodes){
+  if(length(cell_nodes)>0){
+    cell_data <- one_stratum[,cell_nodes, with = FALSE]
+    cells <- do.call(CJ, lapply(cell_data, unique))
+    count_dt <- setkey(cell_data)[cells, list(n_cell=.N), by=.EACHI]
+    count_dt[,n:=sum(n_cell)]
+  } else{
+    count_dt <- data.table(n=nrow(one_stratum))
+  }
 
-  counts <- setkey(to_count)[count_cats, list(nAY=.N), by=.EACHI]
-  counts[,nA:=sum(nAY), by=eval(c(nodes$strata, "A"))]
-  counts[,n:=sum(nAY), by=eval(c(nodes$strata))]
-  cast_form <- sprintf("%s~%s",paste(c(nodes$strata,"A","n", "nA"), collapse="+"),"Y")
-  counts_wide <- dcast(counts, cast_form, value.var="nAY", fill=0)
-  counts_wide <- counts_wide[n!=0]
-  return(counts_wide)
+  return(count_dt)
+}
+
+#' @export
+get_obs_counts <- function(data, nodes, tl_params){
+  count_nodes <- c(nodes$strata)
+
+  #get nodes that define the "cells" for each strata
+  cell_nodes <- c()
+  if(tl_params$count_A) { cell_nodes <- c(cell_nodes,nodes$A)}
+  if(tl_params$count_Y) { cell_nodes <- c(cell_nodes,nodes$Y)}
+
+  # count cells in each strata
+  counts <- data[,get_cell_counts(.SD, cell_nodes), by=eval(nodes$strata)]
+
+  counts <- counts[n!=0]
+  return(counts)
 }
 
 #' Extract intervention levels from parameter names

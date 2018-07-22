@@ -30,6 +30,12 @@ params:
       parallelize:
         input: checkbox
         value: FALSE
+      count_A:
+        input: checkbox
+        value: TRUE
+      count_Y:
+        input: checkbox
+        value: TRUE        
       baseline_level:
         input: 'character'
         value: "[1,2)"
@@ -66,48 +72,88 @@ The analysis was stratified on these variable(s):
 
 ## Data Summary
 
- study_id  mrace   A           n    nA   nAY0   nAY1
----------  ------  -------  ----  ----  -----  -----
-        1  Black   [0,1)      26     4      2      2
-        1  Black   [1,2)      26     8      4      4
-        1  Black   [2,3)      26     6      5      1
-        1  Black   [3,13]     26     8      2      6
-        1  White   [0,1)     263    50      7     43
-        1  White   [1,2)     263    58     22     36
-        1  White   [2,3)     263    56     24     32
-        1  White   [3,13]    263    99     37     62
-        2  Black   [0,1)      22     3      0      3
-        2  Black   [1,2)      22     3      1      2
-        2  Black   [2,3)      22     4      3      1
-        2  Black   [3,13]     22    12      1     11
-        2  White   [0,1)     254    42     14     28
-        2  White   [1,2)     254    67     30     37
-        2  White   [2,3)     254    45     26     19
-        2  White   [3,13]    254   100     62     38
-        3  Black   [0,1)      27     2      1      1
-        3  Black   [1,2)      27    10      6      4
-        3  Black   [2,3)      27     2      1      1
-        3  Black   [3,13]     27    13      5      8
-        3  White   [0,1)     269    51     16     35
-        3  White   [1,2)     269    67     28     39
-        3  White   [2,3)     269    48     23     25
-        3  White   [3,13]    269   103     51     52
-        4  Black   [0,1)      19     1      0      1
-        4  Black   [1,2)      19     7      3      4
-        4  Black   [2,3)      19     4      4      0
-        4  Black   [3,13]     19     7      2      5
-        4  White   [0,1)     275    47     17     30
-        4  White   [1,2)     275    70     37     33
-        4  White   [2,3)     275    62     24     38
-        4  White   [3,13]    275    96     55     41
-        5  Black   [0,1)      21     2      0      2
-        5  Black   [1,2)      21     3      0      3
-        5  Black   [2,3)      21     8      3      5
-        5  Black   [3,13]     21     8      1      7
-        5  White   [0,1)     252    46     21     25
-        5  White   [1,2)     252    59     27     32
-        5  White   [2,3)     252    46     19     27
-        5  White   [3,13]    252   101     51     50
+ study_id  mrace   parity_cat    haz01   n_cell     n
+---------  ------  -----------  ------  -------  ----
+        4  White   [0,1)             0       17   275
+        4  White   [0,1)             1       30   275
+        4  White   [1,2)             0       37   275
+        4  White   [1,2)             1       33   275
+        4  White   [2,3)             0       24   275
+        4  White   [2,3)             1       38   275
+        4  White   [3,13]            0       55   275
+        4  White   [3,13]            1       41   275
+        3  White   [0,1)             0       16   269
+        3  White   [0,1)             1       35   269
+        3  White   [1,2)             0       28   269
+        3  White   [1,2)             1       39   269
+        3  White   [2,3)             0       23   269
+        3  White   [2,3)             1       25   269
+        3  White   [3,13]            0       51   269
+        3  White   [3,13]            1       52   269
+        2  White   [0,1)             0       14   254
+        2  White   [0,1)             1       28   254
+        2  White   [1,2)             0       30   254
+        2  White   [1,2)             1       37   254
+        2  White   [2,3)             0       26   254
+        2  White   [2,3)             1       19   254
+        2  White   [3,13]            0       62   254
+        2  White   [3,13]            1       38   254
+        5  White   [0,1)             0       21   252
+        5  White   [0,1)             1       25   252
+        5  White   [1,2)             0       27   252
+        5  White   [1,2)             1       32   252
+        5  White   [2,3)             0       19   252
+        5  White   [2,3)             1       27   252
+        5  White   [3,13]            0       51   252
+        5  White   [3,13]            1       50   252
+        1  White   [0,1)             0        7   263
+        1  White   [0,1)             1       43   263
+        1  White   [1,2)             0       22   263
+        1  White   [1,2)             1       36   263
+        1  White   [2,3)             0       24   263
+        1  White   [2,3)             1       32   263
+        1  White   [3,13]            0       37   263
+        1  White   [3,13]            1       62   263
+        1  Black   [0,1)             0        2    26
+        1  Black   [0,1)             1        2    26
+        1  Black   [1,2)             0        4    26
+        1  Black   [1,2)             1        4    26
+        1  Black   [2,3)             0        5    26
+        1  Black   [2,3)             1        1    26
+        1  Black   [3,13]            0        2    26
+        1  Black   [3,13]            1        6    26
+        3  Black   [0,1)             0        1    27
+        3  Black   [0,1)             1        1    27
+        3  Black   [1,2)             0        6    27
+        3  Black   [1,2)             1        4    27
+        3  Black   [2,3)             0        1    27
+        3  Black   [2,3)             1        1    27
+        3  Black   [3,13]            0        5    27
+        3  Black   [3,13]            1        8    27
+        4  Black   [0,1)             0        0    19
+        4  Black   [0,1)             1        1    19
+        4  Black   [1,2)             0        3    19
+        4  Black   [1,2)             1        4    19
+        4  Black   [2,3)             0        4    19
+        4  Black   [2,3)             1        0    19
+        4  Black   [3,13]            0        2    19
+        4  Black   [3,13]            1        5    19
+        5  Black   [0,1)             0        0    21
+        5  Black   [0,1)             1        2    21
+        5  Black   [1,2)             0        0    21
+        5  Black   [1,2)             1        3    21
+        5  Black   [2,3)             0        3    21
+        5  Black   [2,3)             1        5    21
+        5  Black   [3,13]            0        1    21
+        5  Black   [3,13]            1        7    21
+        2  Black   [0,1)             0        0    22
+        2  Black   [0,1)             1        3    22
+        2  Black   [1,2)             0        1    22
+        2  Black   [1,2)             1        2    22
+        2  Black   [2,3)             0        3    22
+        2  Black   [2,3)             1        1    22
+        2  Black   [3,13]            0        1    22
+        2  Black   [3,13]            1       11    22
 
 
 The following strata were considered:
@@ -128,10 +174,10 @@ The following strata were considered:
 Some strata were dropped due to rare outcomes:
 
 * study_id: 1, mrace: Black
-* study_id: 2, mrace: Black
 * study_id: 3, mrace: Black
 * study_id: 4, mrace: Black
 * study_id: 5, mrace: Black
+* study_id: 2, mrace: Black
 
 ## Methods Detail
 
@@ -199,11 +245,11 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
 
  study_id  mrace   intervention_level   baseline_level     estimate    ci_lower    ci_upper
 ---------  ------  -------------------  ---------------  ----------  ----------  ----------
-        1  White   NA                   NA                0.6577947   0.6439418   0.6716476
-        2  White   NA                   NA                0.4803150   0.4652098   0.4954201
-        3  White   NA                   NA                0.5613383   0.5520632   0.5706134
-        4  White   NA                   NA                0.5163636   0.5041734   0.5285539
-        5  White   NA                   NA                0.5317460   0.5271936   0.5362985
+        1  White   NA                   NA                0.6577947   0.5960367   0.7195527
+        2  White   NA                   NA                0.4803150   0.4153958   0.5452341
+        3  White   NA                   NA                0.5613383   0.4985612   0.6241154
+        4  White   NA                   NA                0.5163636   0.4526929   0.5800343
+        5  White   NA                   NA                0.5317460   0.4660920   0.5974001
 
 
 ### Parameter: RR
@@ -238,11 +284,11 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
 
  study_id  mrace   intervention_level   baseline_level      estimate     ci_lower    ci_upper
 ---------  ------  -------------------  ---------------  -----------  -----------  ----------
-        1  White   [1,2)                NA                 0.0371050   -0.0933203   0.1675304
-        2  White   [1,2)                NA                -0.0719238   -0.2008368   0.0569891
-        3  White   [1,2)                NA                -0.0207513   -0.1480989   0.1065964
-        4  White   [1,2)                NA                 0.0449351   -0.0820623   0.1719325
-        5  White   [1,2)                NA                -0.0106269   -0.1444558   0.1232021
+        1  White   [1,2)                NA                 0.0371050   -0.0778393   0.1520494
+        2  White   [1,2)                NA                -0.0719238   -0.1813214   0.0374737
+        3  White   [1,2)                NA                -0.0207513   -0.1304654   0.0889629
+        4  White   [1,2)                NA                 0.0449351   -0.0642770   0.1541472
+        5  White   [1,2)                NA                -0.0106269   -0.1282009   0.1069472
 
 
 ### Parameter: PAF
@@ -250,9 +296,9 @@ todo: add detail about dropping strata with rare outcomes, handling missingness
 
  study_id  mrace   intervention_level   baseline_level      estimate     ci_lower    ci_upper
 ---------  ------  -------------------  ---------------  -----------  -----------  ----------
-        1  White   [1,2)                NA                 0.0564082   -0.1640371   0.2351056
-        2  White   [1,2)                NA                -0.1497431   -0.4528291   0.0901138
-        3  White   [1,2)                NA                -0.0369675   -0.2906175   0.1668317
-        4  White   [1,2)                NA                 0.0870221   -0.1949038   0.3024304
-        5  White   [1,2)                NA                -0.0199848   -0.3054406   0.2030514
+        1  White   [1,2)                NA                 0.0564082   -0.1355076   0.2158877
+        2  White   [1,2)                NA                -0.1497431   -0.4024015   0.0573961
+        3  White   [1,2)                NA                -0.0369675   -0.2520491   0.1411666
+        4  White   [1,2)                NA                 0.0870221   -0.1512301   0.2759670
+        5  White   [1,2)                NA                -0.0199848   -0.2669555   0.1788433
 

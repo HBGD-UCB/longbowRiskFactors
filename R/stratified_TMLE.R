@@ -45,7 +45,7 @@ stratified_tmle <- function(data, nodes, baseline_level, learner_list, strata){
 
     # kludge to drop if Y is constant
     # we need this because we no longer consistently detect this in obs_counts
-    if(length(unique(stratum_data[,nodes$Y, with=FALSE]))<=1){
+    if(length(unique(unlist(stratum_data[,nodes$Y, with=FALSE])))<=1){
       message("outcome is constant. Skipping")
       return(NULL)
     }

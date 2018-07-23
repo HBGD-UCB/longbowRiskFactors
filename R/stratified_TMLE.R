@@ -25,6 +25,8 @@ collapse_strata <- function(data, nodes)
 }
 
 tmle_for_stratum <- function(stratum_data, nodes, baseline_level, learner_list){
+
+
   tmle_spec <- tmle_risk_binary(baseline_level=baseline_level)
   tmle_fit <- tmle3(tmle_spec, stratum_data, nodes, learner_list)
   return(tmle_fit$summary)
@@ -40,6 +42,13 @@ stratified_tmle <- function(data, nodes, baseline_level, learner_list, strata){
   all_results <- lapply(strata_labels, function(stratum_label){
     message("tmle for:\t",stratum_label)
     stratum_data <- data[strata_label==stratum_label]
+
+    # kludge to drop if Y is constant
+    # we need this because we no longer consistently detect this in obs_counts
+    if(length(unique(stratum_data[,nodes$Y, with=FALSE]))==0){
+      message("outcome is constant. Skipping")
+      return(NULL)
+    }
     stratum_ids <- strata[strata_label==stratum_label]
     results <- tmle_for_stratum(stratum_data, nodes, baseline_level, learner_list)
 

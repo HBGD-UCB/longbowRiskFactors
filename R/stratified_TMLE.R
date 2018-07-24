@@ -24,10 +24,9 @@ collapse_strata <- function(data, nodes)
   return(strata_map)
 }
 
+#' @export
 tmle_for_stratum <- function(stratum_data, nodes, baseline_level, learner_list){
-
-
-  tmle_spec <- tmle_risk_binary(baseline_level=baseline_level)
+  tmle_spec <- tmle_risk(baseline_level=baseline_level)
   tmle_fit <- tmle3(tmle_spec, stratum_data, nodes, learner_list)
   return(tmle_fit$summary)
 }

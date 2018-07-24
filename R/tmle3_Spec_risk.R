@@ -1,3 +1,4 @@
+
 #' Defines a tmle (minus the data)
 #'
 #' Current limitations:
@@ -6,14 +7,25 @@
 #'
 #' @export
 #
-tmle3_Spec_risk_binary <- R6Class(
-  classname = "tmle3_Spec_TSM_all",
+tmle3_Spec_risk <- R6Class(
+  classname = "tmle3_Spec_risk",
   portable = TRUE,
   class = TRUE,
   inherit = tmle3_Spec,
   public = list(
     initialize = function(baseline_level = NULL, ...) {
-      super$initialize(baseline_level=baseline_level, ...)
+      super$initialize(baseline_level = baseline_level, ...)
+    },
+    make_tmle_task = function(data, node_list, ...) {
+      tmle_task <- super$make_tmle_task(data, node_list, ...)
+
+      if(is.null(private$.options$effect_scale)){
+        outcome_type <- tmle_task$npsem$Y$variable_type$type
+        private$.options$effect_scale <- ifelse(outcome_type=="continuous", "additive", "multiplicative")
+      }
+
+      return(tmle_task)
+
     },
     make_params = function(tmle_task, likelihood) {
       # todo: export and use sl3:::get_levels
@@ -39,18 +51,29 @@ tmle3_Spec_risk_binary <- R6Class(
       baseline_param <-tsm_params[[baseline_index]]
       comparison_params <- tsm_params[-1*baseline_index]
 
-      # define RR params
-      rr_params <- lapply(tsm_params, function(comparison_param){
-        Param_delta$new(likelihood, delta_param_RR, list(baseline_param, comparison_param))
-      })
+      if(self$options$effect_scale=="multiplicative"){
+        # define RR params
+        rr_params <- lapply(tsm_params, function(comparison_param){
+          Param_delta$new(likelihood, delta_param_RR, list(baseline_param, comparison_param))
+        })
 
-      mean_param <- Param_mean$new(likelihood)
+        mean_param <- Param_mean$new(likelihood)
 
-      # define PAR/PAF params
-      par <- Param_delta$new(likelihood, delta_param_PAR, list(baseline_param, mean_param))
-      paf <- Param_delta$new(likelihood, delta_param_PAF, list(baseline_param, mean_param))
+        # define PAR/PAF params
+        par <- Param_delta$new(likelihood, delta_param_PAR, list(baseline_param, mean_param))
+        paf <- Param_delta$new(likelihood, delta_param_PAF, list(baseline_param, mean_param))
 
-      tmle_params <- c(tsm_params, mean_param, rr_params, par, paf)
+        tmle_params <- c(tsm_params, mean_param, rr_params, par, paf)
+      } else {
+        # define ATE params
+        ate_params <- lapply(tsm_params, function(comparison_param){
+          Param_delta$new(likelihood, delta_param_ATE, list(baseline_param, comparison_param))
+        })
+
+        mean_param <- Param_mean$new(likelihood)
+        tmle_params <- c(tsm_params, mean_param, ate_params)
+
+      }
 
       return(tmle_params)
     }
@@ -69,7 +92,7 @@ tmle3_Spec_risk_binary <- R6Class(
 #' Y=Outcome binary
 #' @importFrom sl3 make_learner Lrnr_mean
 #' @export
-tmle_risk_binary <- function(baseline_level = NULL) {
+tmle_risk <- function(baseline_level = NULL) {
   # todo: unclear why this has to be in a factory function
-  tmle3_Spec_risk_binary$new(baseline_level = baseline_level)
+  tmle3_Spec_risk$new(baseline_level = baseline_level)
 }

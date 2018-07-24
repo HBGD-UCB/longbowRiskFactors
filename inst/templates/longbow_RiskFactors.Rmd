@@ -35,7 +35,7 @@ params:
         value: TRUE
       count_Y:
         input: checkbox
-        value: TRUE        
+        value: FALSE        
       baseline_level:
         input: 'character'
         value: "[1,2)"
@@ -122,6 +122,7 @@ if(length(nodes$W)>0){
 }
 
 learner_list <- list(Y=Q_learner, A=g_learner)
+
 ```
 
 ## Methods
@@ -243,19 +244,23 @@ if(params$output_directory!=""){
 # Results Detail
 
 ## Results Plots
-```{r plot_tsm}
+```{r plot_tsm, warning=FALSE, message=FALSE}
 tsm_plot(formatted_results)
 ```
 
-```{r plot_rr}
+```{r plot_rr, warning=FALSE, message=FALSE}
 rr_plot(formatted_results)
 ```
 
-```{r plot_paf}
+```{r plot_ate, warning=FALSE, message=FALSE}
+ate_plot(formatted_results)
+```
+
+```{r plot_paf, warning=FALSE, message=FALSE}
 paf_plot(formatted_results)
 ```
 
-```{r plot_par}
+```{r plot_par, warning=FALSE, message=FALSE}
 par_plot(formatted_results)
 ```
 

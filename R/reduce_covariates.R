@@ -7,7 +7,6 @@ rank_covariates_univariate <- function(data, covariates, outcome){
 
 
   dev_ratios <- sapply(covariates, function(covariate){
-    print(covariate)
     x <- unlist(data[,covariate, with=FALSE])
     if(length(unique(x))==1){
       return(1)

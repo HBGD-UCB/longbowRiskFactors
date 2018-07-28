@@ -66,8 +66,9 @@ if(length(nodes$W)>0){
 
   # qlib <- glib <- make_learner_stack("Lrnr_mean")
   mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
+  qb_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_binomial, learner_function = metalearner_logistic_binomial)
   metalearner <- make_learner(Lrnr_nnls)
-  Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)
+  Q_learner <- make_learner(Lrnr_sl, qlib, qb_metalearner)
   g_learner <- make_learner(Lrnr_sl, glib, mn_metalearner)
 } else {
   Q_learner <- make_learner(Lrnr_glm)
@@ -146,7 +147,7 @@ if(is.null(baseline_level)||is.na(baseline_level)){
   baseline_level = NULL
 }
 
-stratum_label <- "agecat: 24 months, studyid: ki1114097-CMIN, country: BANGLADESH"
+stratum_label <- "agecat: Birth, studyid: ki0047075b-MAL-ED, country: BANGLADESH"
 
 tmle_for_stratum( stratum_label, data, nodes, baseline_level, learner_list)
 

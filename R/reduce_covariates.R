@@ -7,9 +7,13 @@ rank_covariates_univariate <- function(data, covariates, outcome){
 
 
   dev_ratios <- sapply(covariates, function(covariate){
+    print(covariate)
     x <- unlist(data[,covariate, with=FALSE])
+    if(length(unique(x))==1){
+      return(1)
+    }
     if(is.factor(x)){
-      x <- sl3::factor_to_indicators(x)
+      x <- sl3::factor_to_indicators(factor(x))
     }
     fit <- glm.fit(x,Y)
     dev_ratio <- fit$deviance/fit$null

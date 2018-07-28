@@ -17,11 +17,39 @@ tmle3_Spec_risk <- R6Class(
       super$initialize(baseline_level = baseline_level, ...)
     },
     make_tmle_task = function(data, node_list, ...) {
-      tmle_task <- super$make_tmle_task(data, node_list, ...)
-
-      if(is.null(private$.options$effect_scale)){
-        outcome_type <- tmle_task$npsem$Y$variable_type$type
-        private$.options$effect_scale <- ifelse(outcome_type=="continuous", "additive", "multiplicative")
+       # bound Y if continuous
+      Y_node <- node_list$Y
+      Y_vals <- unlist(data[, Y_node, with = FALSE])
+      Y_variable_type <- variable_type(x = Y_vals)
+      if (Y_variable_type$type == "continuous") {
+        min_Y <- min(Y_vals)
+        max_Y <- max(Y_vals)
+        range <- max_Y - min_Y
+        lower <- min_Y # - 0.1 * range
+        upper <- max_Y # + 0.1 * range
+        Y_variable_type <- variable_type(
+          type = "continuous",
+          bounds = c(lower, upper)
+        )
+      }
+      
+      A_vals <- unlist(data[, A_node, with = FALSE])
+      A_variable_type <- variable_type(
+        type = "categorical",
+        levels = unique(A_vals)
+      )
+      
+      # make tmle_task
+      npsem <- list(
+        define_node("W", node_list$W),
+        define_node("A", node_list$A, c("W"), A_variable_type),
+        define_node("Y", node_list$Y, c("A", "W"), Y_variable_type)
+      )
+      
+      if(!is.null(node_list$id)){
+        tmle_task <- tmle3_Task$new(data, npsem = npsem, id=node_list$id, ...)  
+      } else {
+        tmle_task <- tmle3_Task$new(data, npsem = npsem, ...)
       }
 
       return(tmle_task)
@@ -50,6 +78,12 @@ tmle3_Spec_risk <- R6Class(
       baseline_index <- which(A_levels==baseline_level)
       baseline_param <-tsm_params[[baseline_index]]
       comparison_params <- tsm_params[-1*baseline_index]
+
+
+      if(is.null(self$options$effect_scale)){
+        outcome_type <- tmle_task$npsem$Y$variable_type$type
+        private$.options$effect_scale <- ifelse(outcome_type=="continuous", "additive", "multiplicative")
+      }
 
       if(self$options$effect_scale=="multiplicative"){
         # define RR params

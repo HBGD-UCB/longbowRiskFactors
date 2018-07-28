@@ -33,7 +33,14 @@ tmle3_Spec_risk <- R6Class(
         )
       }
       
-      A_vals <- unlist(data[, A_node, with = FALSE])
+       # todo: export and use sl3:::get_levels
+      A_vals <- tmle_task$get_tmle_node("A")
+      if (is.factor(A_vals)) {
+        A_levels <- sort(unique(A_vals))
+        A_levels <- factor(A_levels, levels(A_vals))
+      } else {
+        A_levels <- sort(unique(A_vals))
+      }
       A_variable_type <- variable_type(
         type = "categorical",
         levels = unique(A_vals)

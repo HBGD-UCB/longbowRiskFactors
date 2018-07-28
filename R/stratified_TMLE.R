@@ -25,10 +25,41 @@ collapse_strata <- function(data, nodes)
 }
 
 #' @export
-tmle_for_stratum <- function(stratum_data, nodes, baseline_level, learner_list){
+tmle_for_stratum <- function(stratum_label, data, nodes, baseline_level, learner_list){
+  message("tmle for:\t",stratum_label)
+
+  #subset data
+  stratum_data <- data[strata_label==stratum_label]
+
+  # kludge to drop if Y or A is constant
+  # we need this because we no longer consistently detect this in obs_counts
+  if((length(unique(unlist(stratum_data[,nodes$Y, with=FALSE])))<=1)||
+     (length(unique(unlist(stratum_data[,nodes$A, with=FALSE])))<=1)){
+    message("outcome or treatment is constant. Skipping")
+    print(table(stratum_data[,c(nodes$A,nodes$Y),with=FALSE]))
+    return(NULL)
+  }
+
+  stratum_nodes_reduced <- reduce_covariates(stratum_data, nodes)
+
   tmle_spec <- tmle_risk(baseline_level=baseline_level)
-  tmle_fit <- tmle3(tmle_spec, stratum_data, nodes, learner_list)
-  return(tmle_fit$summary)
+  tmle_fit <- tmle3(tmle_spec, stratum_data, stratum_nodes_reduced, learner_list)
+
+  results <- tmle_fit$summary
+
+  stratum_ids <- stratum_data[1, c(nodes$strata, "strata_label"), with = FALSE]
+  results <- cbind(stratum_ids,results)
+
+
+  # add data about nodes
+  node_data <- as.data.table(lapply(stratum_nodes_reduced[c("W","A","Y")],paste,collapse=", "))
+  if(is.null(node_data$W)){
+    node_data$W="unadjusted"
+  }
+
+  set(results, , names(node_data), node_data)
+
+  return(results)
 }
 
 #' @export
@@ -38,25 +69,10 @@ stratified_tmle <- function(data, nodes, baseline_level, learner_list, strata){
   strata_labels <- strata$strata_label
 
   # stratum_label=strata_labels[[1]]
-  all_results <- lapply(strata_labels, function(stratum_label){
-    message("tmle for:\t",stratum_label)
-    stratum_data <- data[strata_label==stratum_label]
+  all_results <- lapply(strata_labels, tmle_for_stratum,
+                          data, nodes, baseline_level, learner_list)
 
-    # kludge to drop if Y or A is constant
-    # we need this because we no longer consistently detect this in obs_counts
-    if((length(unique(unlist(stratum_data[,nodes$Y, with=FALSE])))<=1)||
-      (length(unique(unlist(stratum_data[,nodes$A, with=FALSE])))<=1)){
-      message("outcome or treatment is constant. Skipping")
-      print(table(stratum_data[,c(nodes$A,nodes$Y),with=FALSE]))
-      return(NULL)
-    }
-    stratum_ids <- strata[strata_label==stratum_label]
-    results <- tmle_for_stratum(stratum_data, nodes, baseline_level, learner_list)
 
-    results <- cbind(stratum_ids,results)
-
-    return(results)
-  })
 
   results <- rbindlist(all_results)
   return(results)

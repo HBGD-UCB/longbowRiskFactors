@@ -22,7 +22,7 @@ params:
     value:
       strata: ['study_id', 'mrace']
       id: ['subjid']
-      W: []
+      W: ['apgar1', 'apgar5', 'gagebrth', 'mage', 'meducyrs', 'sexn']
       A: ['parity_cat']
       Y: ['haz01']
   script_params:
@@ -102,11 +102,10 @@ char_to_factor(data)
 if(length(nodes$W)>0){
   qlib <- make_learner_stack("Lrnr_mean",
                              "Lrnr_glm_fast",
-                             "Lrnr_glmnet",
                              list("Lrnr_xgboost", nthread=1))
 
   glib <- make_learner_stack("Lrnr_mean",
-                             "Lrnr_glmnet",
+                             "Lrnr_randomForest",
                              list("Lrnr_xgboost", nthread=1))
 
 

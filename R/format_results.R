@@ -46,13 +46,7 @@ format_results <- function(results, data, nodes){
   intervention_levels <- get_intervention_levels(results$param)
   set(results, , names(intervention_levels), intervention_levels)
 
-  # get nodes
-  node_data <- as.data.table(lapply(nodes[c("W","A","Y")],paste,collapse=", "))
-  if(is.null(node_data$W)){
-    node_data$W="unadjusted"
-  }
 
-  set(results, , names(node_data), node_data)
 
   # pull out useful columns
   keep_cols <- c(nodes$strata, "W", "A", "Y",

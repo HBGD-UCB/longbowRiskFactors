@@ -26,7 +26,9 @@ glib <- make_learner_stack("Lrnr_mean",
                            "Lrnr_glmnet",
                            list("Lrnr_xgboost", nthread=1))
 
+
 # qlib <- glib <- make_learner_stack("Lrnr_mean")
+
 mn_metalearner <- make_learner(Lrnr_solnp, loss_function = loss_loglik_multinomial, learner_function = metalearner_linear_multinomial)
 metalearner <- make_learner(Lrnr_nnls)
 Q_learner <- make_learner(Lrnr_sl, qlib, metalearner)

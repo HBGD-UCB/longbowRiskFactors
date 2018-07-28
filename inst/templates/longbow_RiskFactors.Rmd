@@ -105,7 +105,6 @@ if(length(nodes$W)>0){
                              list("Lrnr_xgboost", nthread=1))
 
   glib <- make_learner_stack("Lrnr_mean",
-                             "Lrnr_randomForest",
                              list("Lrnr_xgboost", nthread=1))
 
 

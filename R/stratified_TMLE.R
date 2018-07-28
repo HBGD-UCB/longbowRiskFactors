@@ -43,6 +43,12 @@ tmle_for_stratum <- function(stratum_label, data, nodes, baseline_level, learner
   stratum_nodes_reduced <- reduce_covariates(stratum_data, nodes)
 
   tmle_spec <- tmle_risk(baseline_level=baseline_level)
+
+
+  if(length(stratum_nodes_reduced$W)==0){
+    learner_list <- list(Y=make_learner(Lrnr_glm), A=make_learner(Lrnr_mean))
+  }
+
   tmle_fit <- tmle3(tmle_spec, stratum_data, stratum_nodes_reduced, learner_list)
 
   results <- tmle_fit$summary

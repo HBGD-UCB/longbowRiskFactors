@@ -6,8 +6,9 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, eval.after = 'fig.cap')
 options(scipen=999)
 
 ## ----params, warning=FALSE, message=FALSE--------------------------------
+library(devtools)
+load_all("~/longbowRiskFactors")
 library(longbowtools)
-library(longbowRiskFactors)
 library(sl3)
 library(tmle3)
 library(data.table)
@@ -59,7 +60,6 @@ if(length(nodes$W)>0){
                              list("Lrnr_xgboost", nthread=1))
 
   glib <- make_learner_stack("Lrnr_mean",
-                             "Lrnr_randomForest",
                              list("Lrnr_xgboost", nthread=1))
 
 
@@ -145,8 +145,52 @@ baseline_level <- tl_params$baseline_level
 if(is.null(baseline_level)||is.na(baseline_level)){
   baseline_level = NULL
 }
+
+stratum_label <- "agecat: 24 months, studyid: ki1114097-CMIN, country: BANGLADESH"
+
+tmle_for_stratum( stratum_label, data, nodes, baseline_level, learner_list)
+
+message("tmle for:\t",stratum_label)
+
+#subset data
+stratum_data <- data[strata_label==stratum_label]
+
+# kludge to drop if Y or A is constant
+# we need this because we no longer consistently detect this in obs_counts
+if((length(unique(unlist(stratum_data[,nodes$Y, with=FALSE])))<=1)||
+   (length(unique(unlist(stratum_data[,nodes$A, with=FALSE])))<=1)){
+  message("outcome or treatment is constant. Skipping")
+  print(table(stratum_data[,c(nodes$A,nodes$Y),with=FALSE]))
+  return(NULL)
+}
+
+stratum_nodes_reduced <- reduce_covariates(stratum_data, nodes)
+
+tmle_spec <- tmle_risk(baseline_level=baseline_level)
+
+tmle_task <- tmle_spec$make_tmle_task(stratum_data, stratum_nodes_reduced)
+Qtask <- tmle_task$get_regression_task("Y")
+Qlearner <- learner_list$Y
+Qfit <- Qlearner$train(Qtask)
+gtask <- tmle_task$get_regression_task("A")
+glearner <- learner_list$A
+glearner1 <- glearner$params$learners[[2]]
+gfit <- glearner1$train(gtask)
+gfit$predict()
+
+
+task_time <- proc.time()
+initial_likelihood <- tmle_spec$make_initial_likelihood(tmle_task,
+                                                        learner_list)
+likelihood_time <- proc.time()
+updater <- tmle_spec$make_updater()
+targeted_likelihood <- tmle_spec$make_targeted_likelihood(initial_likelihood,
+                                                          updater)
+tmle_params <- tmle_spec$make_params(tmle_task, targeted_likelihood)
+
 results <- stratified_tmle(data, nodes, baseline_level, learner_list, strata)
 formatted_results <- format_results(results, data, nodes)
+
 
 ## ----save_results--------------------------------------------------------
 if(params$output_directory!=""){

@@ -3,13 +3,16 @@ rank_covariates_univariate <- function(data, covariates, outcome){
   if(length(covariates)==0){
     return(c())
   }
-  lrnr_glm <- make_learner(Lrnr_glm)
+  Y <- unlist(data[,outcome, with=FALSE])
 
 
   dev_ratios <- sapply(covariates, function(covariate){
-    cov_task <- make_sl3_Task(data, covariates=covariate, outcome=outcome)
-    fit <- lrnr_glm$train(cov_task)
-    dev_ratio <- fit$fit_object$deviance/fit$fit_object$null
+    x <- unlist(data[,covariate, with=FALSE])
+    if(is.factor(x)){
+      x <- sl3::factor_to_indicators(x)
+    }
+    fit <- glm.fit(x,Y)
+    dev_ratio <- fit$deviance/fit$null
   })
 
   cov_df <- data.table(covariates, dev_ratios)

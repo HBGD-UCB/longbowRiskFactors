@@ -35,13 +35,14 @@ params:
         value: TRUE
       count_Y:
         input: checkbox
-        value: FALSE        
+        value: TRUE        
       baseline_level:
         input: 'character'
         value: "[1,2)"
   output_directory:
     value: ''
-
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -187,9 +188,11 @@ count_cols <- setdiff(names(obs_counts), unlist(nodes))
 min_counts <- obs_counts[,list(min_cell=min(unlist(.SD))), .SDcols=count_cols,
                          by=eval(nodes$strata)]
 
+strata <- merge(strata,min_counts, by=nodes$strata)
+
 #todo: this could be a script parameter
 cell_cutoff <- 5
-dropped_strata <- min_counts[min_cell < cell_cutoff]
+dropped_strata <- strata[min_cell < cell_cutoff]
 
 if(nrow(dropped_strata)>0){
   cat("### Dropped Strata\n\nSome strata were dropped due to rare outcomes:\n\n")

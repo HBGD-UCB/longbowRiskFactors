@@ -1,29 +1,19 @@
-get_cell_counts <- function(one_stratum, cell_nodes){
-  if(length(cell_nodes)>0){
-    cell_data <- one_stratum[,cell_nodes, with = FALSE]
-    cells <- do.call(CJ, lapply(cell_data, unique))
-    count_dt <- setkey(cell_data)[cells, list(n_cell=.N), by=.EACHI]
-    count_dt[,n:=sum(n_cell)]
-  } else{
-    count_dt <- data.table(n=nrow(one_stratum))
-  }
-
-  return(count_dt)
-}
-
 #' @export
 get_obs_counts <- function(data, nodes, tl_params){
   count_nodes <- c(nodes$strata)
 
-  #get nodes that define the "cells" for each strata
+  # get nodes that define the "cells" for each strata
   cell_nodes <- c()
   if(tl_params$count_A) { cell_nodes <- c(cell_nodes,nodes$A)}
   if(tl_params$count_Y) { cell_nodes <- c(cell_nodes,nodes$Y)}
 
-  # count cells in each strata
-  counts <- data[,get_cell_counts(.SD, cell_nodes), by=eval(nodes$strata)]
+  # enumerate all expected cells
+  cell_data <- data[,c(nodes$strata,cell_nodes), with = FALSE]
+  cells <- do.call(CJ, lapply(cell_data, unique))
 
-  counts <- counts[n!=0]
+  # count cells in each strata
+  counts <- setkey(cell_data)[cells, list(n_cell=.N), by=.EACHI]
+  counts[,n:=sum(n_cell), by = eval(nodes$strata)]
   return(counts)
 }
 

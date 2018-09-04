@@ -25,7 +25,9 @@ collapse_strata <- function(data, nodes)
 }
 
 #' @export
-tmle_for_stratum <- function(stratum_label, data, nodes, baseline_level, learner_list){
+tmle_for_stratum <- function(strata_row, data, nodes, baseline_level, learner_list){
+  strata_row
+  stratum_label <- strata_row$strata_label
   message("tmle for:\t",stratum_label)
 
   #subset data
@@ -40,7 +42,8 @@ tmle_for_stratum <- function(stratum_label, data, nodes, baseline_level, learner
     return(NULL)
   }
 
-  stratum_nodes_reduced <- reduce_covariates(stratum_data, nodes)
+  max_covariates <- floor(strata_row$min_cell/10)
+  stratum_nodes_reduced <- reduce_covariates(stratum_data, nodes, max_covariates)
 
   tmle_spec <- tmle_risk(baseline_level=baseline_level)
 
@@ -71,15 +74,12 @@ tmle_for_stratum <- function(stratum_label, data, nodes, baseline_level, learner
 #' @export
 #' @importFrom data.table rbindlist
 stratified_tmle <- function(data, nodes, baseline_level, learner_list, strata){
-  #todo: make this fallback to standard tmle if no stratifying variables
-  strata_labels <- strata$strata_label
 
-  # stratum_label=strata_labels[[1]]
-  all_results <- lapply(strata_labels, tmle_for_stratum,
-                          data, nodes, baseline_level, learner_list)
-
+  strata_row <- strata[1,]
+  results <- strata[,tmle_for_stratum(.SD, data, nodes,
+                                          baseline_level, learner_list),
+                        by=seq_len(nrow(strata))]
 
 
-  results <- rbindlist(all_results)
   return(results)
 }

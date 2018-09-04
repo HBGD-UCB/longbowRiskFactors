@@ -27,22 +27,9 @@ rank_covariates_univariate <- function(data, covariates, outcome){
   return(covariates_sorted)
 }
 
-get_max_covariates <- function(data, outcome){
-  n_vals <- length(unique(unlist(data[,outcome,with=FALSE])))
-  if(n_vals>2){
-    effective_n <- nrow(data)
-  } else {
-    val_counts <- table(data[,outcome,with=FALSE])
-    effective_n <- min(val_counts)
-  }
-
-  max_covariates <- floor(effective_n/10)
-}
-
 #' @export
-reduce_covariates <- function(data, nodes){
+reduce_covariates <- function(data, nodes, max_covariates=0){
   covariate_rank <- rank_covariates_univariate(data, nodes$W, nodes$Y)
-  max_covariates <- get_max_covariates(data, nodes$Y)
   max_covariates <- min(max_covariates, length(covariate_rank))
   nodes$W <- covariate_rank[seq_len(max_covariates)]
 

@@ -54,7 +54,6 @@ fit <- fit_tmle3(tmle_task, targeted_likelihood, tmle_params,
 fit_time <- proc.time()
 fit$set_timings(start_time, task_time, likelihood_time, params_time,
                 fit_time)
-return(fit)
 
 data[sample(nrow(data),40),study_id:=6]
 strata <- collapse_strata(data, nodes)

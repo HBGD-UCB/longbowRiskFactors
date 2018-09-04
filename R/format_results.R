@@ -14,6 +14,8 @@ get_obs_counts <- function(data, nodes, tl_params){
   # count cells in each strata
   counts <- setkey(cell_data)[cells, list(n_cell=.N), by=.EACHI]
   counts[,n:=sum(n_cell), by = eval(nodes$strata)]
+  counts <- counts[n!=0]
+
   return(counts)
 }
 

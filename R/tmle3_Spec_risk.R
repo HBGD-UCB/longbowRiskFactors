@@ -44,7 +44,7 @@ tmle3_Spec_risk <- R6Class(
       }
       A_variable_type <- variable_type(
         type = "categorical",
-        levels = unique(A_vals)
+        levels = A_levels
       )
       
       # make tmle_task

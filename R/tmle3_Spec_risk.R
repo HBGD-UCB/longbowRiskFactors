@@ -32,13 +32,13 @@ tmle3_Spec_risk <- R6Class(
           bounds = c(lower, upper)
         )
       }
-      
+
        # todo: export and use sl3:::get_levels
       A_node <- node_list$A
       A_vals <- unlist(data[, A_node, with = FALSE])
       if (is.factor(A_vals)) {
         A_levels <- sort(unique(A_vals))
-        A_levels <- factor(A_levels, levels(A_vals))
+        A_levels <- factor(A_levels, A_levels)
       } else {
         A_levels <- sort(unique(A_vals))
       }
@@ -46,16 +46,16 @@ tmle3_Spec_risk <- R6Class(
         type = "categorical",
         levels = A_levels
       )
-      
+
       # make tmle_task
       npsem <- list(
         define_node("W", node_list$W),
         define_node("A", node_list$A, c("W"), A_variable_type),
         define_node("Y", node_list$Y, c("A", "W"), Y_variable_type)
       )
-      
+
       if(!is.null(node_list$id)){
-        tmle_task <- tmle3_Task$new(data, npsem = npsem, id=node_list$id, ...)  
+        tmle_task <- tmle3_Task$new(data, npsem = npsem, id=node_list$id, ...)
       } else {
         tmle_task <- tmle3_Task$new(data, npsem = npsem, ...)
       }

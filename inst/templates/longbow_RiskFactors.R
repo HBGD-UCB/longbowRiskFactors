@@ -1,13 +1,12 @@
 library(jsonlite)
-params <- fromJSON("/tmp/0498a9dd-4619-4470-9349-9a876a538baa/inputs.json")
+params <- fromJSON("/tmp/f9751d05-53c8-47d9-9e21-c1f4b81f9da4/inputs.json")
 ## ----setup, include=FALSE------------------------------------------------
 library(knitr)
 knitr::opts_chunk$set(echo = FALSE, message=FALSE, eval.after = 'fig.cap')
 options(scipen=999)
 
 ## ----params, warning=FALSE, message=FALSE--------------------------------
-library(devtools)
-load_all("~/longbowRiskFactors")
+library(longbowRiskFactors)
 library(longbowtools)
 library(sl3)
 library(tmle3)

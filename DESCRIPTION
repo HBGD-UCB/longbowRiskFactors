@@ -18,7 +18,7 @@ Imports:
 Remotes:
     github::osofr/condensier,
     github::tlverse/delayed,
-    github::tlverse/sl3@add-column-fix,
+    github::tlverse/sl3,
     github::tlverse/tmle3,
     github::tlverse/longbowtools,
 Suggests: 

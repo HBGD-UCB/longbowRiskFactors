@@ -9,7 +9,7 @@ nodes <- list(
     "meducyrs", "sexn"
   ),
   A = "parity_cat",
-  Y = "haz01"
+  Y = "haz"
 )
 
 # drop missing values
@@ -42,6 +42,6 @@ if(FALSE && length(nodes$W)>0){
 
 learner_list <- list(Y=Q_learner, A=g_learner)
 # tmle3_Fit$debug(".tmle_fit")
-tmle_spec<-tmle_risk_binary(baseline_level="[1,2)")
+tmle_spec<-tmle_risk(baseline_level="[1,2)")
 # debugonce(tmle_spec$make_params)
 tmle_fit <- tmle3(tmle_spec, data, nodes, learner_list)

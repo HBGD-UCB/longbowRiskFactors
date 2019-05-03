@@ -107,13 +107,16 @@ tmle3_Spec_risk <- R6Class(
 
         tmle_params <- c(tsm_params, mean_param, rr_params, par, paf)
       } else {
+        
+        
         # define ATE params
         ate_params <- lapply(tsm_params, function(comparison_param){
           Param_delta$new(likelihood, delta_param_ATE, list(baseline_param, comparison_param))
         })
 
         mean_param <- Param_mean$new(likelihood)
-        tmle_params <- c(tsm_params, mean_param, ate_params)
+        par <- Param_delta$new(likelihood, delta_param_PAR, list(baseline_param, mean_param))        
+        tmle_params <- c(tsm_params, mean_param, ate_params, par)
 
       }
 
